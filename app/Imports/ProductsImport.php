@@ -15,6 +15,25 @@ class ProductsImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {        
+                // Verifica si ya existe un producto con el mismo nombre o código de barras
+        $exists = Product::where('name', $row['nombre'])
+            ->orWhere(function($q) use ($row) {
+                if (!empty($row['codigo_de_barras'])) {
+                    $q->where('barcode', $row['codigo_de_barras']);
+                }
+            })
+            ->orWhere(function($q) use ($row) {
+                if (!empty($row['codigo_de_barras'])) {
+                    $q->where('barcode', $row['codigo_de_barras']);
+                }
+            })
+            ->exists();
+
+        if ($exists) {
+            // Si existe, no lo importa (retorna null)
+            return null;
+        }
+
         return new Product([
             'name'        => $row['nombre'],
             'barcode'     => $row['codigo_de_barras'],

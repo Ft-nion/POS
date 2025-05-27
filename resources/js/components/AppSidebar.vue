@@ -34,10 +34,15 @@ const mainNavItems: NavItem[] = [
         icon: Folder,
     },
     {
-        title: 'Clientes',
+        title: 'Credito',
         href: '/users',
         icon: UsersRound,
     },
+    {
+        title: 'Caja',
+        href: '/cash_registers',
+        icon: CupSoda,
+    }
 ]
 
 const footerNavItems: NavItem[] = [

@@ -35,7 +35,31 @@ function clearSearch() {
     searchProducts();
 }
 
-const csrf = usePage().props.csrf_token;
+// File import functionality
+const fileInput = ref(null);
+const selectedFile = ref<File | null>(null);
+
+function onFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+        selectedFile.value = target.files[0];
+    }
+}
+
+function importFile() {
+    if (selectedFile.value) {
+        const formData = new FormData();
+        formData.append('file', selectedFile.value);
+
+        router.post('/import', formData, {
+            onSuccess: () => {
+                selectedFile.value = null;
+                searchProducts();
+            },
+        });
+    }
+}
+
 </script>
 <template>
     <Head title="Productos" />
@@ -63,31 +87,54 @@ const csrf = usePage().props.csrf_token;
             </div>
 
             <div class="flex justify-between items-center mb-2">
+                            <!-- File import section -->
                 <div class="flex gap-2">
-                    <Button as-child size="sm" class="bg-green-600 text-white hover:bg-green-800">
-                        <a href="/export">Exportar Excel</a>
+                    <input
+                        ref="fileInput"
+                        type="file"
+                        accept=".xlsx,.xls,.csv"
+                        class="hidden"
+                        @change="onFileChange"
+                    />
+                    <Button type="button" size="sm" class="bg-gray-500 text-white hover:bg-gray-700" @click="fileInput.click()">
+                        Cargar archivo
                     </Button>
-                    <form action="/import" method="POST" enctype="multipart/form-data" class="inline">
-                        <input type="file" name="file" accept=".xlsx,.xls" class="inline-block" required />
-                        <Button type="submit" size="sm" class="bg-blue-600 text-white hover:bg-blue-800 ml-2">Importar Excel</Button>
-                    </form>
+                    <Button
+                        type="button"
+                        size="sm"
+                        class="bg-indigo-700 text-white hover:bg-indigo-900"
+                        :disabled="!selectedFile"
+                        @click="importFile"
+                    >
+                        Importar
+                    </Button>
                 </div>
-                <Button as-child size="sm" class="bg-indigo-500 text-white hover:bg-indigo-700" type="button">
+                <div class="flex gap-2">
+                        <Button as-child size="sm" class="bg-green-600 text-white hover:bg-green-800">
+                            <a href="/export">Exportar Excel</a>
+                        </Button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-2">
+                  <Button as-child size="sm" class="bg-indigo-500 text-white hover:bg-indigo-700" type="button">
                     <Link href="/products/create"> <CirclePlus /> Crear</Link>
                 </Button>
             </div>
 
+
+
             <div class="flex items-center justify-between ">
                 <Table>
-                    <TableCaption class="py-4">Lista de productos</TableCaption>
+                    <TableCaption class="py-1">Lista de productos</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Nombre</TableHead>
-                            <TableHead>Descripción</TableHead>
-                            <TableHead>Unidad</TableHead>
-                            <TableHead>Precio venta</TableHead>
-                            <TableHead>Estado</TableHead>
-                            <TableHead>Stock</TableHead>
+                            <TableHead class="w-30">Unidad</TableHead>
+                            <TableHead class="w-30">Precio venta</TableHead>
+                            <TableHead class="w-30">Stock</TableHead>
+                            <TableHead class="w-64">Descripción</TableHead>
+                            <TableHead class="w-30">Estado</TableHead>
                             <TableHead class="text-center w-64">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -95,15 +142,16 @@ const csrf = usePage().props.csrf_token;
                     <TableBody>
                         <TableRow v-for="product in products" :key="product.id">
                             <TableCell>{{ product.name }}</TableCell>
-                            <TableCell>{{ product.description }}</TableCell>
                             <TableCell>{{ product.unit }}</TableCell>
                             <TableCell>${{ product.sale_price }}</TableCell>
                             <TableCell>
-                                <span v-if="product.status" class="text-green-600 font-semibold">Activo</span>
-                                <span v-else class="text-red-600 font-semibold">Inactivo</span>
-                            </TableCell>
-                            <TableCell>
                                 {{ product.stock }}
+                            </TableCell>
+                            <TableCell>{{ product.description }}</TableCell>
+                            <TableCell>
+                                <span :class="product.status ? 'text-green-500' : 'text-red-500'">
+                                    {{ product.status ? 'Activo' : 'Inactivo' }}
+                                </span>
                             </TableCell>
                             <TableCell class="text-center w-64 flex justify-center gap-10">
                                 <Button size="sm" 

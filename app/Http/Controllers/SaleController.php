@@ -51,10 +51,21 @@ class SaleController extends Controller
             return $carry + ($item['quantity'] * $item['price']);
         }, 0);
 
+        // Buscar la caja activa del usuario
+        $cashRegister = \App\Models\CashRegister::where('user_id', auth()->id())
+            ->whereNull('closed_at')
+            ->latest('opened_at')
+            ->first();
+
+        if (!$cashRegister) {
+            return redirect()->back()->with('error', 'No tienes una caja abierta.');
+        }
+
         $sale = Sale::create([
             'user_id' => auth()->id(),
             'date' => $validated['date'],
             'total' => $total,
+            'cash_register_id' => $cashRegister->id,
         ]);
 
         foreach ($validated['items'] as $item) {

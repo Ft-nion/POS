@@ -28,7 +28,7 @@ const sales = computed(() => props.sales);
                 <TableCaption class="py-4">Lista de ventas</TableCaption>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>ID</TableHead>
+                        <TableHead>Caja</TableHead>
                         <TableHead>Fecha</TableHead>
                         <TableHead>Total</TableHead>
                         <TableHead>Vendedor</TableHead>
@@ -37,7 +37,10 @@ const sales = computed(() => props.sales);
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="sale in sales" :key="sale.id">
-                        <TableCell>{{ sale.id }}</TableCell>
+                        <TableCell>
+                            <span v-if="sale.cash_register_id">#{{ sale.cash_register_id }}</span>
+                            <span v-else class="text-gray-400">-</span>
+                        </TableCell>
                         <TableCell>{{ sale.date }}</TableCell>
                         <TableCell>${{ sale.total }}</TableCell>
                         <TableCell>{{ sale.user?.name }}</TableCell>

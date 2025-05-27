@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CashRegisterController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
@@ -15,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('sales', SaleController::class);
     Route::resource('purchases', PurchaseController::class); // Agrega la ruta resource de compras
+    Route::resource('cash_registers', CashRegisterController::class); // Asegúrate de importar el controlador de caja
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/export', [ProductController::class, 'export'])->name('export');
     Route::post('/import', [ProductController::class, 'import'])->name('import');

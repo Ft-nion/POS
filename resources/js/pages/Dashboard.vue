@@ -12,7 +12,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // Recibe el total de productos desde el backend
-const props = defineProps<{ totalProducts: number }>();
+const props = defineProps<{
+    totalProducts: number,
+    cashRegisterAmount: number,
+    todaySales: number,
+    openRegisters: number,
+    closedRegisters: number,
+}>();
 </script>
 
 <template>
@@ -25,11 +31,13 @@ const props = defineProps<{ totalProducts: number }>();
                     <span class="text-4xl font-bold text-indigo-600">{{ props.totalProducts }}</span>
                     <span class="text-lg text-gray-700 dark:text-gray-300">Productos registrados</span>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
+                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex flex-col items-center justify-center bg-white dark:bg-gray-900">
+                    <span class="text-4xl font-bold text-green-600">${{ props.cashRegisterAmount }}</span>
+                    <span class="text-lg text-gray-700 dark:text-gray-300">Dinero en caja activa</span>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
+                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border flex flex-col items-center justify-center bg-white dark:bg-gray-900">
+                    <span class="text-4xl font-bold text-blue-600">${{ props.todaySales }}</span>
+                    <span class="text-lg text-gray-700 dark:text-gray-300">Ventas del día</span>
                 </div>
             </div>
             <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:min-h-min">

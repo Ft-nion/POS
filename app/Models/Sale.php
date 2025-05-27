@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\SaleItem;
 use App\Models\User;
+use App\Models\CashRegister;
 
 class Sale extends Model
 {
@@ -13,6 +14,7 @@ class Sale extends Model
         'date',
         'total',
         'user_id',
+        'cash_register_id', // <-- Agrega este campo
     ];
 
     // Relación: una venta tiene muchos items
@@ -25,5 +27,11 @@ class Sale extends Model
     public function user() : BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relación: una venta pertenece a una caja
+    public function cashRegister()
+    {
+        return $this->belongsTo(CashRegister::class);
     }
 }

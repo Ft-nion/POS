@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->dateTime('date')->default(now());
             $table->decimal('total', 10, 2);
-            $table->unsignedBigInteger('user_id'); // vendedor
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('cash_register_id')->nullable()->constrained('cash_registers');
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
