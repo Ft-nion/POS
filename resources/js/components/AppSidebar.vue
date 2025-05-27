@@ -19,11 +19,6 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Empleados',
-        href: '/employees',
-        icon: UsersRound,
-    },
-    {
         title: 'Productos',
         href: '/products',
         icon: CupSoda,
@@ -32,7 +27,17 @@ const mainNavItems: NavItem[] = [
         title: 'Ventas',
         href: '/sales',
         icon: BookOpen,
-    }
+    },
+    {
+        title: 'Compras',
+        href: '/purchases',
+        icon: Folder,
+    },
+    {
+        title: 'Clientes',
+        href: '/users',
+        icon: UsersRound,
+    },
 ]
 
 const footerNavItems: NavItem[] = [

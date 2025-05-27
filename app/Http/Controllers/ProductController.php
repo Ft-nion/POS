@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
-
+use App\Exports\ProductsExport;
+use App\Imports\ProductsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -49,9 +51,9 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'barcode' => 'nullable|string|unique:products,barcode',
-            'purchase_price' => 'required|numeric',
+            'description' => 'nullable|string',
             'sale_price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'status' => 'required|boolean',
             'unit' => 'nullable|string|max:50',
         ]);
 
@@ -86,9 +88,9 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'barcode' => 'nullable|string|unique:products,barcode,' . $product->id,
-            'purchase_price' => 'required|numeric',
+            'description' => 'nullable|string',
             'sale_price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'status' => 'required|boolean',
             'unit' => 'nullable|string|max:50',
         ]);
 
@@ -104,5 +106,26 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Producto eliminado correctamente.');
+    }
+
+    /**
+     * Export the products to an Excel file.
+     */
+    public function export()
+    {
+        return Excel::download(new ProductsExport, 'productos.xlsx');
+    }
+
+    /**
+     * Import products from an Excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls'
+        ]);
+        $file = $request->file('file');
+        Excel::import(new ProductsImport, $file);
+        return redirect()->route('products.index')->with('success', 'Productos importados correctamente.');
     }
 }

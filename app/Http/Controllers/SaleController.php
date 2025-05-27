@@ -42,7 +42,7 @@ class SaleController extends Controller
             'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|numeric|min:0.1',
             'items.*.price' => 'required|numeric|min:0',
         ]);
 
@@ -72,9 +72,10 @@ class SaleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Sale $sale)
     {
-        //
+        $sale->load(['items.product', 'user']);
+        return inertia('sales/show', ['sale' => $sale]);
     }
 
     /**

@@ -7,10 +7,10 @@ import { ref } from 'vue';
 const form = ref({
     name: '',
     barcode: '',
-    purchase_price: '',
-    sale_price: '',
-    stock: '',
+    description: '',
     unit: '',
+    sale_price: '',
+    status: true,
 });
 
 function submit() {
@@ -33,20 +33,23 @@ function submit() {
                     <input v-model="form.barcode" type="text" class="w-full border rounded px-2 py-1"/>
                 </div>
                 <div>
-                    <label class="block mb-1">Precio de compra</label>
-                    <input v-model="form.purchase_price" type="number" step="0.01" class="w-full border rounded px-2 py-1" required />
+                    <label class="block mb-1">Descripción</label>
+                    <textarea v-model="form.description" class="w-full border rounded px-2 py-1"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-1">Unidad</label>
+                    <input v-model="form.unit" type="text" class="w-full border rounded px-2 py-1" placeholder="Ej: pieza, kg, litro" />
                 </div>
                 <div>
                     <label class="block mb-1">Precio de venta</label>
                     <input v-model="form.sale_price" type="number" step="0.01" class="w-full border rounded px-2 py-1" required />
                 </div>
                 <div>
-                    <label class="block mb-1">Stock</label>
-                    <input v-model="form.stock" type="number" class="w-full border rounded px-2 py-1" required />
-                </div>
-                <div>
-                    <label class="block mb-1">Unidad</label>
-                    <input v-model="form.unit" type="text" class="w-full border rounded px-2 py-1" />
+                    <label class="block mb-1">Estado</label>
+                    <select v-model="form.status" class="w-full border rounded px-2 py-1">
+                        <option :value="true">Activo</option>
+                        <option :value="false">Inactivo</option>
+                    </select>
                 </div>
                 <Button type="submit" class="bg-indigo-500 text-white hover:bg-indigo-700">Guardar</Button>
                 <Link href="/products" class="ml-4 text-indigo-600 hover:underline">Cancelar</Link>

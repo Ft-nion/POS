@@ -50,13 +50,11 @@ export interface Product {
     id: number;
     name: string;
     barcode: string;
-    purchase_price: number;
+    description: string;
     sale_price: number;
     stock: number;
-    image?: string | null;
     status: boolean;
     unit?: string | null;
-    is_featured: boolean;
 }
 
 export interface SaleItem {
@@ -77,4 +75,23 @@ export interface Sale {
     created_at: string;
     updated_at: string;
     items?: SaleItem[]; // Relación opcional para mostrar los items de la venta
+}
+
+export interface PurchaseItem {
+    id: number;
+    purchase_id: number;
+    product_id: number;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    product?: Product; // Relación opcional para mostrar info del producto
+}
+export interface Purchase {
+    id: number;
+    date: string;
+    total: number;
+    user_id: number;
+    created_at: string;
+    updated_at: string;
+    items?: PurchaseItem[]; // Relación opcional para mostrar los items de la compra
 }

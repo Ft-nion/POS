@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Pencil, CirclePlus, Trash } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,8 @@ function clearSearch() {
     search.value = '';
     searchProducts();
 }
+
+const csrf = usePage().props.csrf_token;
 </script>
 <template>
     <Head title="Productos" />
@@ -44,7 +46,7 @@ function clearSearch() {
                     <input
                         v-model="search"
                         type="text"
-                        placeholder="Buscar por nombre o código de barras..."
+                        placeholder="Buscar por nombre..."
                         class="border rounded px-2 py-1"
                     />
                     <Button type="submit" size="sm" class="bg-indigo-500 text-white hover:bg-indigo-700">Buscar</Button>
@@ -61,12 +63,19 @@ function clearSearch() {
             </div>
 
             <div class="flex justify-between items-center mb-2">
+                <div class="flex gap-2">
+                    <Button as-child size="sm" class="bg-green-600 text-white hover:bg-green-800">
+                        <a href="/export">Exportar Excel</a>
+                    </Button>
+                    <form action="/import" method="POST" enctype="multipart/form-data" class="inline">
+                        <input type="file" name="file" accept=".xlsx,.xls" class="inline-block" required />
+                        <Button type="submit" size="sm" class="bg-blue-600 text-white hover:bg-blue-800 ml-2">Importar Excel</Button>
+                    </form>
+                </div>
                 <Button as-child size="sm" class="bg-indigo-500 text-white hover:bg-indigo-700" type="button">
                     <Link href="/products/create"> <CirclePlus /> Crear</Link>
                 </Button>
             </div>
-
-            
 
             <div class="flex items-center justify-between ">
                 <Table>
@@ -74,9 +83,10 @@ function clearSearch() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Nombre</TableHead>
-                            <TableHead>Precio compra</TableHead>
-                            <TableHead>Precio venta</TableHead>
+                            <TableHead>Descripción</TableHead>
                             <TableHead>Unidad</TableHead>
+                            <TableHead>Precio venta</TableHead>
+                            <TableHead>Estado</TableHead>
                             <TableHead>Stock</TableHead>
                             <TableHead class="text-center w-64">Acciones</TableHead>
                         </TableRow>
@@ -85,10 +95,16 @@ function clearSearch() {
                     <TableBody>
                         <TableRow v-for="product in products" :key="product.id">
                             <TableCell>{{ product.name }}</TableCell>
-                            <TableCell>${{ product.purchase_price }}</TableCell>
-                            <TableCell>${{ product.sale_price }}</TableCell>
+                            <TableCell>{{ product.description }}</TableCell>
                             <TableCell>{{ product.unit }}</TableCell>
-                            <TableCell>{{ product.stock }}</TableCell>
+                            <TableCell>${{ product.sale_price }}</TableCell>
+                            <TableCell>
+                                <span v-if="product.status" class="text-green-600 font-semibold">Activo</span>
+                                <span v-else class="text-red-600 font-semibold">Inactivo</span>
+                            </TableCell>
+                            <TableCell>
+                                {{ product.stock }}
+                            </TableCell>
                             <TableCell class="text-center w-64 flex justify-center gap-10">
                                 <Button size="sm" 
                                     class="bg-blue-500 text-white hover:bg-blue-700">

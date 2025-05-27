@@ -15,13 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('barcode')->unique()->nullable();
-            $table->decimal('purchase_price', 10, 2);
+            $table->text('description')->nullable(); // Descripción opcional
             $table->decimal('sale_price', 10, 2);
             $table->integer('stock')->default(0);
-            $table->string('image')->nullable();
             $table->boolean('status')->default(true);
             $table->string('unit')->nullable();
-            $table->boolean('is_featured')->default(false);
             $table->timestamps();
         });
     }

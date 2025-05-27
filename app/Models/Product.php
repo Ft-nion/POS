@@ -10,21 +10,17 @@ class Product extends Model
     protected $fillable = [
         'name',
         'barcode',
-        'purchase_price',
+        'description', // Agregado
         'sale_price',
         'stock',
-        'image',
         'status',
         'unit',
-        'is_featured',
     ];
 
     // Casts para tipos de datos
     protected $casts = [
-        'purchase_price' => 'float',
         'sale_price' => 'float',
         'stock' => 'integer',
         'status' => 'boolean',
-        'is_featured' => 'boolean',
     ];
 }
