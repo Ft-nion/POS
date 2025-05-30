@@ -12,31 +12,36 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+
+        // Total de productos
         $totalProducts = Product::count();
-
-        // Caja activa del usuario
-        $cashRegister = CashRegister::where('user_id', auth()->id())
-            ->whereNull('closed_at')
-            ->latest('opened_at')
-            ->first();
-
-        $cashRegisterAmount = $cashRegister
-            ? $cashRegister->opening_amount + $cashRegister->sales()->sum('total')
-            : 0;
-
-        // Ventas del día
-        $todaySales = Sale::whereDate('created_at', Carbon::today())->sum('total');
 
         // Cajas abiertas/cerradas
         $openRegisters = CashRegister::whereNull('closed_at')->count();
         $closedRegisters = CashRegister::whereNotNull('closed_at')->count();
 
-        return inertia('Dashboard', [
-            'totalProducts'      => $totalProducts,
+        // Dinero en caja activa (puedes ajustar según tu lógica)
+        $cashRegisterAmount = CashRegister::where('user_id', $user->id)
+            ->whereNull('closed_at')
+            ->sum('opening_amount');
+
+        // Ventas del día
+        if ($user->role === 'admin') {
+            $todaySales = Sale::whereDate('date', now()->toDateString())->sum('total');
+        } else {
+            // Solo ventas del usuario y de sus cajas abiertas hoy
+            $todaySales = Sale::where('user_id', $user->id)
+                ->whereDate('date', now()->toDateString())
+                ->sum('total');
+        }
+
+        return Inertia::render('Dashboard', [
+            'totalProducts' => $totalProducts,
             'cashRegisterAmount' => $cashRegisterAmount,
-            'todaySales'         => $todaySales,
-            'openRegisters'      => $openRegisters,
-            'closedRegisters'    => $closedRegisters,
+            'todaySales' => $todaySales,
+            'openRegisters' => $openRegisters,
+            'closedRegisters' => $closedRegisters,
         ]);
     }
 }

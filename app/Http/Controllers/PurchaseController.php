@@ -14,8 +14,20 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        $purchases = Purchase::with('user')->latest()->get();
-        return Inertia::render('purchases/index', compact('purchases'));
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
+            $purchases = Purchase::with('user')->latest()->get();
+        } else {
+            $purchases = Purchase::with('user')
+                ->where('user_id', $user->id)
+                ->latest()
+                ->get();
+        }
+
+        return Inertia::render('purchases/index', [
+            'purchases' => $purchases,
+        ]);
     }
 
     /**
@@ -36,20 +48,23 @@ class PurchaseController extends Controller
             'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
-            'items.*.purchase_price' => 'required|numeric|min:0',
-            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.quantity' => 'required|numeric|min:0.01',
+            'items.*.purchase_price' => 'required|numeric|min:0.01',
         ]);
 
         $total = collect($validated['items'])->reduce(function ($carry, $item) {
             return $carry + ($item['quantity'] * $item['purchase_price']);
         }, 0);
 
+        // Guarda la compra (Purchase)
         $purchase = Purchase::create([
             'user_id' => auth()->id(),
             'date' => $validated['date'],
-            'total' => $total,
+            'total' => $total, // <--- agrega esto
+            // ...otros campos...
         ]);
 
+        // Guarda los detalles y actualiza el precio de compra del producto
         foreach ($validated['items'] as $item) {
             $purchase->details()->create([
                 'product_id' => $item['product_id'],
@@ -58,12 +73,13 @@ class PurchaseController extends Controller
                 'subtotal' => $item['quantity'] * $item['purchase_price'],
             ]);
 
-            // Sumar la cantidad al stock del producto
+            // Actualiza el precio de compra y suma al stock
             $product = \App\Models\Product::find($item['product_id']);
-            if ($product) {
-                $product->stock += $item['quantity'];
-                $product->save();
+            if ($product->purchase_price != $item['purchase_price']) {
+                $product->purchase_price = $item['purchase_price'];
             }
+            $product->stock += $item['quantity']; // <-- Suma la cantidad al stock
+            $product->save();
         }
 
         return redirect()->route('purchases.index')->with('success', 'Compra registrada correctamente.');

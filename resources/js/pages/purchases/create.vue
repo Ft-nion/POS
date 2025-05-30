@@ -53,8 +53,8 @@ function selectProduct(product: any) {
             name: product.name,
             barcode: product.barcode,
             quantity: 1,
-            purchase_price: 0,
-            subtotal: 0, // <-- inicializa subtotal
+            purchase_price: product.purchase_price ?? 0, // <-- AQUÍ
+            subtotal: product.purchase_price ?? 0,       // <-- AQUÍ
         });
     }
     search.value = '';
@@ -109,12 +109,12 @@ function submit() {
                             class="border rounded px-2 py-1 w-full"
                             autocomplete="off"
                         />
-                        <ul v-if="suggestions.length" class="absolute bg-gray-900 border rounded shadow z-10 w-full max-h-40 overflow-auto">
+                        <ul v-if="suggestions.length" class="absolute border rounded z-10 w-full max-h-40 overflow-auto">
                             <li
                                 v-for="suggestion in suggestions"
                                 :key="suggestion.id"
                                 @mousedown.prevent="selectProduct(suggestion)"
-                                class="px-2 py-1 hover:bg-gray-700 cursor-pointer"
+                                class="px-2 py-1 hover:bg-gray-300 cursor-pointer"
                             >
                                 {{ suggestion.name }}
                             </li>
@@ -126,8 +126,8 @@ function submit() {
                     <div class="grid grid-cols-6 gap-2 mb-2 font-bold">
                         <span>Nombre</span>
                         <span>Cantidad</span>
-                        <span>Subtotal</span>
                         <span>Precio compra</span>
+                         <span>Subtotal</span>
                         <span></span>
                     </div>
                     <div
@@ -143,21 +143,21 @@ function submit() {
                             step="0.01"
                             class="border rounded px-2 py-1 w-20"
                             required
-                            @input="item.purchase_price = item.quantity > 0 ? item.subtotal / item.quantity : 0"
+                            @input="item.subtotal = (item.quantity * item.purchase_price).toFixed(2)"
+                        />
+                        <input
+                            v-model.number="item.purchase_price"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            class="border rounded px-2 py-1 w-24 text-right"
+                            required
+                            @input="item.subtotal = (item.quantity * item.purchase_price).toFixed(2)"
                         />
                         <input
                             v-model.number="item.subtotal"
                             type="number"
-                            min="0.01"
-                            step="0.01"
                             class="border rounded px-2 py-1 w-24"
-                            required
-                            @input="item.purchase_price = item.quantity > 0 ? item.subtotal / item.quantity : 0"
-                        />
-                        <input
-                            :value="item.purchase_price.toFixed(2)"
-                            type="number"
-                            class="border rounded px-2 py-1 w-24 text-right bg-gray-900"
                             readonly
                         />
                         <Button type="button" size="sm" class="bg-red-500 text-white" @click="removeItem(idx)">Quitar</Button>
@@ -168,7 +168,7 @@ function submit() {
                     <input
                       :value="form.items.reduce((sum, item) => sum + (item.quantity * item.purchase_price), 0).toFixed(2)"
                       type="number"
-                      class="w-full border rounded px-2 py-1 bg-gray-900"
+                      class="w-full border rounded px-2 py-1"
                       readonly
                     />
                 </div>

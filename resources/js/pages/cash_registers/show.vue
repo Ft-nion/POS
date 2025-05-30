@@ -45,7 +45,7 @@ const props = defineProps<{
                 <h2 class="text-xl font-semibold mb-2">Ventas asociadas</h2>
                 <table class="w-full border rounded mb-4">
                     <thead>
-                        <tr class="bg-gray-900">
+                        <tr>
                             <th class="px-2 py-1">ID</th>
                             <th class="px-2 py-1">Fecha</th>
                             <th class="px-2 py-1">Total</th>

@@ -21,7 +21,7 @@ const props = defineProps<{ sale: Sale }>();
                 <h2 class="text-lg font-semibold mb-2">Productos vendidos</h2>
                 <table class="w-full border rounded mb-4">
                     <thead>
-                        <tr class="bg-gray-800 text-white">
+                        <tr>
                             <th class="p-2">Producto</th>
                             <th class="p-2">Cantidad</th>
                             <th class="p-2">Precio unitario</th>

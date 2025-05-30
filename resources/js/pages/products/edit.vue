@@ -11,8 +11,11 @@ const props = defineProps<{ product: Product }>();
 const form = ref({
     name: props.product.name,
     barcode: props.product.barcode,
-    description: props.product.description ?? '', // Descripción opcional
+    description: props.product.description ?? '',
+    unit: props.product.unit ?? '',
+    purchase_price: props.product.purchase_price,
     sale_price: props.product.sale_price,
+    stock: props.product.stock, // <-- Agregado
     status: props.product.status,
 });
 
@@ -44,8 +47,16 @@ function submit() {
                     <input v-model="form.unit" type="text" class="w-full border rounded px-2 py-1" placeholder="Ej: pieza, kg, litro" />
                 </div>
                 <div>
+                    <label class="block mb-1">Precio de compra</label>
+                    <input v-model="form.purchase_price" type="number" step="0.01" class="w-full border rounded px-2 py-1" required />
+                </div>
+                <div>
                     <label class="block mb-1">Precio de venta</label>
                     <input v-model="form.sale_price" type="number" step="0.01" class="w-full border rounded px-2 py-1" required />
+                </div>
+                <div>
+                    <label class="block mb-1">Stock</label>
+                    <input v-model="form.stock" type="number" min="0" step="1" class="w-full border rounded px-2 py-1" required />
                 </div>
                 <div>
                     <label class="block mb-1">Estado</label>

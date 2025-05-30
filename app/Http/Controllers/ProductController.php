@@ -16,6 +16,10 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'No tienes permiso para acceder a esta página.');
+        }
+
         $query = Product::query();
 
         if ($request->search) {
@@ -39,7 +43,7 @@ class ProductController extends Controller
     public function create()
     {
         return Inertia::render('products/create', [
-            'products' => new Product(), // singular y consistente con edit
+            'product' => new Product(), // corregido: singular y consistente con edit
         ]);
     }
 
@@ -52,7 +56,9 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'barcode' => 'nullable|string|unique:products,barcode',
             'description' => 'nullable|string',
+            'purchase_price' => 'required|numeric',
             'sale_price' => 'required|numeric',
+            'stock' => 'required|integer|min:0', // <-- agregado
             'status' => 'required|boolean',
             'unit' => 'nullable|string|max:50',
         ]);
@@ -89,7 +95,9 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'barcode' => 'nullable|string|unique:products,barcode,' . $product->id,
             'description' => 'nullable|string',
+            'purchase_price' => 'required|numeric',
             'sale_price' => 'required|numeric',
+            'stock' => 'required|integer|min:0', // <-- agregado
             'status' => 'required|boolean',
             'unit' => 'nullable|string|max:50',
         ]);

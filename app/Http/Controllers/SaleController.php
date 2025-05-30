@@ -14,10 +14,21 @@ class SaleController extends Controller
      */
     public function index()
     {
-        return inertia::render('sales/index', [
-            'sales' => Sale::with(['user', 'items.product'])
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
+            $sales = Sale::with(['user', 'items.product'])
                 ->orderBy('created_at', 'desc')
-                ->get(),
+                ->get();
+        } else {
+            $sales = Sale::with(['user', 'items.product'])
+                ->where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
+        return inertia::render('sales/index', [
+            'sales' => $sales,
         ]);
     }
 
@@ -45,6 +56,17 @@ class SaleController extends Controller
             'items.*.quantity' => 'required|numeric|min:0.1',
             'items.*.price' => 'required|numeric|min:0',
         ]);
+
+        // Validar stock disponible y estado activo
+        foreach ($validated['items'] as $item) {
+            $product = Product::find($item['product_id']);
+            if (!$product->status) {
+                return redirect()->back()->with('error', "El producto '{$product->name}' está inactivo y no se puede vender.");
+            }
+            if ($product->stock < $item['quantity']) {
+                return redirect()->back()->with('error', "No hay suficiente stock para el producto: {$product->name}");
+            }
+        }
 
         // Calcula el total en el backend
         $total = collect($validated['items'])->reduce(function ($carry, $item) {
@@ -85,6 +107,11 @@ class SaleController extends Controller
      */
     public function show(Sale $sale)
     {
+        $user = auth()->user();
+        if ($user->role !== 'admin' && $sale->user_id !== $user->id) {
+            abort(403, 'No tienes permiso para ver esta venta.');
+        }
+
         $sale->load(['items.product', 'user']);
         return inertia('sales/show', ['sale' => $sale]);
     }

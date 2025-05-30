@@ -4,24 +4,19 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { UsersRound } from 'lucide-vue-next';
 import { CupSoda } from 'lucide-vue-next';
 
-
+const user = usePage().props.auth?.user;
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Panel',
         href: '/dashboard',
         icon: LayoutGrid,
-    },
-    {
-        title: 'Productos',
-        href: '/products',
-        icon: CupSoda,
     },
     {
         title: 'Ventas',
@@ -34,20 +29,29 @@ const mainNavItems: NavItem[] = [
         icon: Folder,
     },
     {
-        title: 'Credito',
-        href: '/users',
-        icon: UsersRound,
-    },
-    {
         title: 'Caja',
         href: '/cash_registers',
         icon: CupSoda,
     }
-]
-
-const footerNavItems: NavItem[] = [
-
 ];
+
+// Solo admin ve los módulos Usuarios y Productos
+if (user && user.role === 'admin') {
+    mainNavItems.push(
+        {
+            title: 'Usuarios',
+            href: '/users',
+            icon: UsersRound,
+        },
+        {
+            title: 'Productos',
+            href: '/products',
+            icon: CupSoda,
+        }
+    );
+}
+
+const footerNavItems: NavItem[] = [];
 </script>
 
 <template>

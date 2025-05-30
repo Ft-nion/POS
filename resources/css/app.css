@@ -185,3 +185,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+select {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+.dark select {
+  background-color: hsl(220, 30%, 15%);
+  color: hsl(0, 0%, 98%);
+}

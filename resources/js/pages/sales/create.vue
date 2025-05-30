@@ -24,37 +24,49 @@ function onProductInput() {
     }
     suggestions.value = props.products.filter(
         p =>
-            (p.name && p.name.toLowerCase().includes(value)) ||
-            (p.barcode && p.barcode.toLowerCase().includes(value))
+            p.status && // Solo productos activos
+            ((p.name && p.name.toLowerCase().includes(value)) ||
+            (p.barcode && p.barcode.toLowerCase().includes(value)))
     );
 }
 
 function selectProduct(product: any) {
-    // Si ya está en la lista, suma 1 a la cantidad
-    // Define el tipo de items para evitar el error de tipo 'never'
     type SaleItem = {
         product_id: number;
         name: string;
         barcode: string;
         quantity: number;
         price: number;
+        stock: number;
     };
 
-    // Inicializa form con el tipo correcto
     if (!form.value.items) {
         form.value.items = [];
     }
 
     const existing = (form.value.items as SaleItem[]).find(item => item.product_id === product.id);
     if (existing) {
+        if (existing.quantity + 1 > product.stock) {
+            alert('No hay suficiente stock para este producto.');
+            return;
+        }
         existing.quantity += 1;
     } else {
+        if (product.stock < 1) {
+            alert('No hay stock disponible para este producto.');
+            return;
+        }
+        if (!product.status) {
+            alert('Este producto está inactivo y no se puede vender.');
+            return;
+        }
         (form.value.items as SaleItem[]).push({
             product_id: product.id,
             name: product.name,
             barcode: product.barcode,
             quantity: 1,
             price: product.sale_price,
+            stock: product.stock,
         });
     }
     search.value = '';
@@ -86,6 +98,9 @@ function submit() {
     <AppLayout>
         <div class="max-w-2xl mx-auto p-6 rounded-xl shadow">
             <h1 class="text-2xl font-bold mb-4">Registrar venta</h1>
+            <div v-if="$page.props.flash.error" class="mb-4 rounded bg-red-100 text-red-700 px-4 py-2">
+                {{ $page.props.flash.error }}
+            </div>
             <form @submit.prevent="submit" class="space-y-4">
                 <div>
                     <label class="block mb-1">Fecha</label>
@@ -109,12 +124,12 @@ function submit() {
                             class="border rounded px-2 py-1 w-full"
                             autocomplete="off"
                         />
-                        <ul v-if="suggestions.length" class="absolute bg-gray-900 border rounded shadow z-10 w-full max-h-40 overflow-auto">
+                        <ul v-if="suggestions.length" class="absolute border rounded shadow z-10 w-full max-h-40 overflow-auto">
                             <li
                                 v-for="suggestion in suggestions"
                                 :key="suggestion.id"
                                 @mousedown.prevent="selectProduct(suggestion)"
-                                class="px-2 py-1 hover:bg-gray-700 cursor-pointer"
+                                class="px-2 py-1 hover:bg-gray-300 cursor-pointer"
                             >
                                 {{ suggestion.name }}
                             </li>
@@ -137,8 +152,8 @@ function submit() {
                     >
                         <span class="truncate">{{ item.name }}</span>
                         <input v-model.number="item.quantity" type="number" min="0.1" step="0.01" class="border rounded px-2 py-1 w-20" required />
-                        <input :value="item.price.toFixed(2)" type="number" class="border rounded px-2 py-1 w-24 text-right bg-gray-900" readonly />
-                        <span class="border rounded px-2 py-1 w-24 text-right bg-gray-900">
+                        <input :value="item.price.toFixed(2)" type="number" class="border rounded px-2 py-1 w-24 text-right" readonly />
+                        <span class="border rounded px-2 py-1 w-24 text-right">
                             {{ (item.quantity * item.price).toFixed(2) }}
                         </span>
                         <Button type="button" size="sm" class="bg-red-500 text-white" @click="removeItem(idx)">Quitar</Button>
@@ -149,7 +164,7 @@ function submit() {
                     <input
                       :value="form.items.reduce((sum, item) => sum + (item.quantity * item.price), 0).toFixed(2)"
                       type="number"
-                      class="w-full border rounded px-2 py-1 bg-gray-900"
+                      class="w-full border rounded px-2 py-1"
                       readonly
                     />
                 </div>

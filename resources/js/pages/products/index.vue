@@ -132,6 +132,7 @@ function importFile() {
                             <TableHead>Nombre</TableHead>
                             <TableHead class="w-30">Unidad</TableHead>
                             <TableHead class="w-30">Precio venta</TableHead>
+                            <TableHead class="w-30">Precio compra</TableHead>
                             <TableHead class="w-30">Stock</TableHead>
                             <TableHead class="w-64">Descripción</TableHead>
                             <TableHead class="w-30">Estado</TableHead>
@@ -144,6 +145,7 @@ function importFile() {
                             <TableCell>{{ product.name }}</TableCell>
                             <TableCell>{{ product.unit }}</TableCell>
                             <TableCell>${{ product.sale_price }}</TableCell>
+                            <TableCell>${{ product.purchase_price }}</TableCell>
                             <TableCell>
                                 {{ product.stock }}
                             </TableCell>

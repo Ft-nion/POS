@@ -35,7 +35,7 @@ function submit() {
                     <input
                         :value="Number(props.cashRegister.opening_amount) + (props.cashRegister.sales?.reduce((sum, sale) => sum + Number(sale.total), 0) || 0)"
                         type="number"
-                        class="w-full border rounded px-2 py-1 bg-gray-900"
+                        class="w-full border rounded px-2 py-1"
                         readonly
                     />
                 </div>

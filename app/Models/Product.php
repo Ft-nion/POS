@@ -12,6 +12,7 @@ class Product extends Model
         'barcode',
         'description', // Agregado
         'sale_price',
+        'purchase_price', // Agregado
         'stock',
         'status',
         'unit',
@@ -20,6 +21,7 @@ class Product extends Model
     // Casts para tipos de datos
     protected $casts = [
         'sale_price' => 'float',
+        'purchase_price' => 'float', // Agregado
         'stock' => 'integer',
         'status' => 'boolean',
     ];

@@ -14,20 +14,19 @@ class ProductsExport implements FromCollection, WithHeadings
     public function collection()
     {
         // Selecciona solo los campos que quieres exportar
-        return Product::select('id', 'name', 'barcode', 'description', 'unit', 'sale_price', 'stock', 'status')->get();
+        return Product::select('name', 'barcode', 'description', 'unit', 'sale_price', 'stock', 'status')->get();
     }
 
     public function headings(): array
     {
         return [
-            'ID',
-            'Nombre',
-            'Código de barras',
-            'Descripción',
-            'Unidad',
-            'Precio de venta',
-            'Stock',
-            'Estado',
+            'nombre',
+            'codigo_de_barras',
+            'descripcion',
+            'unidad',
+            'precio_de_venta',
+            'stock',
+            'estado',
         ];
     }
 }

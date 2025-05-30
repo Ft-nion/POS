@@ -13,7 +13,17 @@ class CashRegisterController extends Controller
      */
     public function index()
     {
-        $cashRegisters = CashRegister::with('user')->orderBy('opened_at', 'desc')->get();
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
+            $cashRegisters = CashRegister::with('user')->orderBy('opened_at', 'desc')->get();
+        } else {
+            $cashRegisters = CashRegister::with('user')
+                ->where('user_id', $user->id)
+                ->orderBy('opened_at', 'desc')
+                ->get();
+        }
+
         return inertia::render('cash_registers/index', [
             'cashRegisters' => $cashRegisters,
         ]);
@@ -59,6 +69,10 @@ class CashRegisterController extends Controller
      */
     public function show(CashRegister $cashRegister)
     {
+        $user = auth()->user();
+        if ($user->role !== 'admin' && $cashRegister->user_id !== $user->id) {
+            abort(403, 'No tienes permiso para ver esta caja.');
+        }
         return inertia::render('cash_registers/show', [
             'cashRegister' => $cashRegister->load('user', 'sales'),
         ]);
@@ -69,6 +83,11 @@ class CashRegisterController extends Controller
      */
     public function edit(CashRegister $cashRegister)
     {
+        $user = auth()->user();
+        if ($user->role !== 'admin' && $cashRegister->user_id !== $user->id) {
+            abort(403, 'No tienes permiso para editar esta caja.');
+        }
+        $cashRegister = CashRegister::with('sales')->findOrFail($cashRegister->id);
         return inertia::render('cash_registers/edit', [
             'cashRegister' => $cashRegister,
         ]);
@@ -79,6 +98,10 @@ class CashRegisterController extends Controller
      */
     public function update(Request $request, CashRegister $cashRegister)
     {
+        $user = auth()->user();
+        if ($user->role !== 'admin' && $cashRegister->user_id !== $user->id) {
+            abort(403, 'No tienes permiso para cerrar esta caja.');
+        }
         // Suma de ventas asociadas a la caja
         $ventas = $cashRegister->sales()->sum('total');
         $closing_amount = $cashRegister->opening_amount + $ventas;

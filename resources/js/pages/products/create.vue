@@ -9,6 +9,7 @@ const form = ref({
     barcode: '',
     description: '',
     unit: '',
+    purchase_price: '', // <--- Agregado
     sale_price: '',
     status: true,
 });
@@ -41,14 +42,18 @@ function submit() {
                     <input v-model="form.unit" type="text" class="w-full border rounded px-2 py-1" placeholder="Ej: pieza, kg, litro" />
                 </div>
                 <div>
+                    <label class="block mb-1">Precio de compra</label>
+                    <input v-model="form.purchase_price" type="number" step="0.01" class="w-full border rounded px-2 py-1" required />
+                </div>
+                <div>
                     <label class="block mb-1">Precio de venta</label>
                     <input v-model="form.sale_price" type="number" step="0.01" class="w-full border rounded px-2 py-1" required />
                 </div>
                 <div>
                     <label class="block mb-1">Estado</label>
                     <select v-model="form.status" class="w-full border rounded px-2 py-1">
-                        <option :value="true">Activo</option>
-                        <option :value="false">Inactivo</option>
+                        <option class="" :value="true">Activo</option>
+                        <option class="" :value="false">Inactivo</option>
                     </select>
                 </div>
                 <Button type="submit" class="bg-indigo-500 text-white hover:bg-indigo-700">Guardar</Button>

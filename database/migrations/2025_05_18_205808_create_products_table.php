@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('barcode')->unique()->nullable();
             $table->text('description')->nullable(); // Descripción opcional
+            $table->decimal('purchase_price', 10, 2); // <--- Agregado
             $table->decimal('sale_price', 10, 2);
             $table->integer('stock')->default(0);
             $table->boolean('status')->default(true);
@@ -32,3 +33,4 @@ return new class extends Migration
         Schema::dropIfExists('products');
     }
 };
+
